@@ -32,4 +32,7 @@ public class UsersEntity {
     private String role;
 
     private boolean loginIsEmail;
+
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "usersEntity")
+    private UsersDetailEntity usersDetailEntity;
 }

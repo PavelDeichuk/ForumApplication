@@ -34,4 +34,7 @@ public class UsersDetailEntity {
     @Transient
     private boolean status;
 
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private UsersEntity usersEntity;
 }
