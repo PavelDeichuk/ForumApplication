@@ -25,6 +25,10 @@ public class UsersEntity {
 
     private String activation;
 
+    private String pass_token;
+
+    private String email_token;
+
     private String role;
 
     private boolean loginIsEmail;
