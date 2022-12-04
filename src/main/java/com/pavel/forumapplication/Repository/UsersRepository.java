@@ -14,7 +14,8 @@ public interface UsersRepository extends JpaRepository<UsersEntity,Long> {
 
     UsersEntity findByLoginIsEmail(boolean loginIsEmail);
 
-    Optional<UsersEntity> findByPass_token(String pass_token);
+    Optional<UsersEntity> findByEmailtoken(String emailtoken);
 
-    Optional<UsersEntity> findByEmail_token(String email_token);
+    Optional<UsersEntity> findByPasstoken(String passtoken);
+
 }

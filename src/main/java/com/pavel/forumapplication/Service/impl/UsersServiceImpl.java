@@ -95,7 +95,7 @@ public class UsersServiceImpl implements UsersService {
                 .orElseThrow(() -> {
                     throw new RuntimeException("Not found for email!");
                 });
-        users.setPass_token(UUID.randomUUID().toString());
+        users.setPasstoken(UUID.randomUUID().toString());
         usersRepository.save(users);
         return UsersMapper.INSTANCE.USERS_DTO(users);
     }
@@ -108,7 +108,7 @@ public class UsersServiceImpl implements UsersService {
                 .orElseThrow(() -> {
                     throw new RuntimeException("Error login for username");
                 });
-        users.setEmail_token(UUID.randomUUID().toString());
+        users.setEmailtoken(UUID.randomUUID().toString());
         usersRepository.save(users);
         return UsersMapper.INSTANCE.USERS_DTO(users);
     }
@@ -117,7 +117,7 @@ public class UsersServiceImpl implements UsersService {
     @Transactional
     public UsersDto ResetEmail(UsersEntity usersEntity, String email_token) {
         UsersEntity users = usersRepository
-                .findByEmail_token(email_token)
+                .findByEmailtoken(email_token)
                 .orElseThrow(() -> {
                     throw new RuntimeException("Not found for email token!");
                 });
@@ -130,7 +130,7 @@ public class UsersServiceImpl implements UsersService {
             throw new RuntimeException("Email is already");
         }
         users.setEmail(usersEntity.getEmail());
-        users.setEmail_token(null);
+        users.setEmailtoken(null);
         usersRepository.save(users);
         return UsersMapper.INSTANCE.USERS_DTO(users);
     }
@@ -139,7 +139,7 @@ public class UsersServiceImpl implements UsersService {
     @Transactional
     public UsersDto ResetPassword(UsersEntity usersEntity, String pass_token) {
         UsersEntity users = usersRepository
-                .findByPass_token(pass_token)
+                .findByPasstoken(pass_token)
                 .orElseThrow(() -> {
                     throw new RuntimeException("Not found for pass token!");
                 });
@@ -147,7 +147,7 @@ public class UsersServiceImpl implements UsersService {
             throw new RuntimeException("Password is not equals!");
         }
         users.setPassword(usersEntity.getPassword());
-        users.setPass_token(null);
+        users.setPasstoken(null);
         usersRepository.save(users);
         return UsersMapper.INSTANCE.USERS_DTO(users);
     }

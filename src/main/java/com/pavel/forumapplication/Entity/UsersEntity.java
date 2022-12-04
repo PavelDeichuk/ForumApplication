@@ -25,9 +25,9 @@ public class UsersEntity {
 
     private String activation;
 
-    private String pass_token;
+    private String passtoken;
 
-    private String email_token;
+    private String emailtoken;
 
     private String role;
 
