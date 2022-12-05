@@ -1,7 +1,7 @@
 package com.pavel.forumapplication.Dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.Serializable;
 
@@ -10,6 +10,9 @@ import java.io.Serializable;
  */
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class UsersDto implements Serializable {
     private Long id;
     private String username;
