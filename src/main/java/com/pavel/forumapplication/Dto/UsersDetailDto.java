@@ -1,8 +1,7 @@
 package com.pavel.forumapplication.Dto;
 
 import com.pavel.forumapplication.Entity.UsersEntity;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -12,6 +11,9 @@ import java.time.LocalDateTime;
  */
 @Getter
 @Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class UsersDetailDto implements Serializable {
     private Long id;
     private String name;
