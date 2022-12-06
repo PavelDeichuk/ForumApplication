@@ -2,6 +2,10 @@ package com.pavel.forumapplication.Entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 
 @Entity
 @Getter
@@ -10,9 +14,13 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "users")
+@DynamicUpdate
+@DynamicInsert
+@Audited
 public class UsersEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @NotAudited
     private Long id;
 
     private String username;
@@ -34,5 +42,6 @@ public class UsersEntity {
     private boolean loginIsEmail;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "usersEntity")
+    @NotAudited
     private UsersDetailEntity usersDetailEntity;
 }
