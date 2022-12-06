@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.envers.Audited;
 
 import java.time.LocalDateTime;
 
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 @Table(name = "users-detail")
 @DynamicUpdate
 @DynamicInsert
+@Audited
 public class UsersDetailEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
