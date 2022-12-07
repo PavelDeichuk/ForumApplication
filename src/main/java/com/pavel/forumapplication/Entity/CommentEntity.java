@@ -29,4 +29,7 @@ public class CommentEntity {
     @JoinColumn(name = "topic_id")
     private TopicEntity topicEntity;
 
+    @OneToOne(mappedBy = "commentEntity", cascade = CascadeType.ALL)
+    private ImageEntity imageEntity;
+
 }
