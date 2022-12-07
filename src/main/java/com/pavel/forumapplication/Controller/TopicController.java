@@ -6,7 +6,7 @@ import com.pavel.forumapplication.Service.TopicService;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import java.awt.*;
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -31,7 +31,7 @@ public class TopicController {
     }
 
     @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public TopicDto CreateTopic(@RequestBody TopicEntity topicEntity){
+    public TopicDto CreateTopic(@RequestBody TopicEntity topicEntity) throws IOException {
         return topicService.CreateTopic(topicEntity);
     }
 
