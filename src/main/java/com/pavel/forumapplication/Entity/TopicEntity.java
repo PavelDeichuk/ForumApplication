@@ -29,4 +29,7 @@ public class TopicEntity {
     @ManyToMany(mappedBy = "topicEntities")
     @JsonIgnore
     private List<CategoryEntity> categoryEntities;
+
+    @OneToOne(mappedBy = "topicEntity", cascade = CascadeType.ALL)
+    private ImageEntity imageEntity;
 }
