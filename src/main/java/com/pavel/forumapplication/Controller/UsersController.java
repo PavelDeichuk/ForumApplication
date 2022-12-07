@@ -27,7 +27,7 @@ public class UsersController {
     }
 
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<UsersDto> GetAllUsers(@RequestParam(value = "page", defaultValue = "1") int page,
+    public List<UsersDto> GetAllUsers(@RequestParam(value = "page", defaultValue = "0") int page,
                                       @RequestParam(value = "size", defaultValue = "10") int size){
         return usersService.GetAllUsers(page, size);
     }
