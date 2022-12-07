@@ -3,6 +3,7 @@ package com.pavel.forumapplication.Service;
 import com.pavel.forumapplication.Dto.TopicDto;
 import com.pavel.forumapplication.Entity.TopicEntity;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface TopicService {
@@ -12,7 +13,7 @@ public interface TopicService {
 
     TopicDto AddTopicToCategory(Long topic_id, Long category_id);
 
-    TopicDto CreateTopic(TopicEntity topicEntity);
+    TopicDto CreateTopic(TopicEntity topicEntity) throws IOException;
 
     TopicDto EditTopic(Long topic_id, TopicEntity topicEntity);
 
