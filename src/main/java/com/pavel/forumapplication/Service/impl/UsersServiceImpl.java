@@ -1,8 +1,12 @@
 package com.pavel.forumapplication.Service.impl;
 
 import com.pavel.forumapplication.Dto.UsersDto;
+import com.pavel.forumapplication.Email.EmailSender;
+import com.pavel.forumapplication.Entity.UsersDetailEntity;
 import com.pavel.forumapplication.Entity.UsersEntity;
+import com.pavel.forumapplication.Exception.BadRequestException;
 import com.pavel.forumapplication.Mapper.UsersMapper;
+import com.pavel.forumapplication.Repository.UsersDetailRepository;
 import com.pavel.forumapplication.Repository.UsersRepository;
 import com.pavel.forumapplication.Service.UsersService;
 import org.springframework.data.domain.Page;
@@ -20,14 +24,25 @@ public class UsersServiceImpl implements UsersService {
 
     private final UsersRepository usersRepository;
 
-    public UsersServiceImpl(UsersRepository usersRepository) {
+    private final UsersDetailRepository usersDetailRepository;
+
+
+    private final EmailSender emailSender;
+
+
+    public UsersServiceImpl(UsersRepository usersRepository, UsersDetailRepository usersDetailRepository, EmailSender emailSender) {
         this.usersRepository = usersRepository;
+        this.usersDetailRepository = usersDetailRepository;
+        this.emailSender = emailSender;
     }
 
     @Override
     public List<UsersDto> GetAllUsers(int number, int size) {
         Pageable page = PageRequest.of(number,size);
         Page<UsersEntity> usersEntities = usersRepository.findAll(page);
+        if(usersEntities.isEmpty()){
+            throw new BadRequestException("users list is empty!");
+        }
         return usersEntities
                 .stream()
                 .map(UsersMapper.INSTANCE::USERS_DTO)
@@ -71,19 +86,23 @@ public class UsersServiceImpl implements UsersService {
                     throw new RuntimeException("email is exist!");
                 });
         if(!Objects.equals(usersEntity.getPassword(), usersEntity.getPassword2())){
-            throw new RuntimeException("password is not equals!");
+            throw new BadRequestException("password is not equals!");
         }
+        UsersDetailEntity usersDetail = new UsersDetailEntity();
         UsersEntity users = usersRepository
-                .saveAndFlush(
+                .save(
                         UsersEntity
                                 .builder()
                                 .username(usersEntity.getUsername())
                                 .password(usersEntity.getPassword())
-                                .email(usersEntity.getEmail())
                                 .role("QUEST")
-                                .loginIsEmail(usersEntity.isLoginIsEmail())
+                                .email(usersEntity.getEmail())
+                                .usersDetailEntity(usersDetail)
                                 .build()
                 );
+        usersDetail.setUsersEntity(users);
+        usersDetailRepository.saveAndFlush(usersDetail);
+        //emailSender.Send("deychuk@inbox.ru", usersEntity.getEmail(), "Activate account", usersEntity.getActivation());
         return UsersMapper.INSTANCE.USERS_DTO(users);
     }
 
@@ -103,34 +122,18 @@ public class UsersServiceImpl implements UsersService {
     @Override
     @Transactional
     public UsersDto ChangeEmail(String email) {
-        UsersEntity users = usersRepository
-                .findByEmail(email)
-                .orElseThrow(() -> {
-                    throw new RuntimeException("Error login for username");
-                });
-        users.setEmailtoken(UUID.randomUUID().toString());
-        usersRepository.save(users);
-        return UsersMapper.INSTANCE.USERS_DTO(users);
+        // send to code to new email
+       return null;
     }
 
     @Override
-    @Transactional
-    public UsersDto ResetEmail(UsersEntity usersEntity, String email_token) {
+    public UsersDto ActivateNewEmail(String activation_email) {
         UsersEntity users = usersRepository
-                .findByEmailtoken(email_token)
+                .findByEmailtoken(activation_email)
                 .orElseThrow(() -> {
-                    throw new RuntimeException("Not found for email token!");
+                    throw new RuntimeException("Not found for email token");
                 });
-        usersRepository
-                .findByEmail(usersEntity.getEmail())
-                .ifPresent(email -> {
-                    throw new RuntimeException("Email is exist!");
-                });
-        if(Objects.equals(users.getEmail(), usersEntity.getEmail())){
-            throw new RuntimeException("Email is already");
-        }
-        users.setEmail(usersEntity.getEmail());
-        users.setEmailtoken(null);
+        users.setEmail(null);
         usersRepository.save(users);
         return UsersMapper.INSTANCE.USERS_DTO(users);
     }
