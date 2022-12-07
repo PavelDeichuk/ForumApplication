@@ -2,8 +2,9 @@ package com.pavel.forumapplication.Entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
 
-import java.util.List;
+import java.sql.Types;
 
 @Entity
 @Getter
@@ -19,8 +20,25 @@ public class ImageEntity {
 
     private String name;
 
+    @Lob
+    @JdbcTypeCode(Types.BINARY)
     private byte[] bytes;
 
     private Long size;
 
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_detail_id")
+    private UsersDetailEntity usersDetailEntity;
+
+    @OneToOne
+    @JoinColumn(name = "topic_id")
+    private TopicEntity topicEntity;
+
+    @OneToOne
+    @JoinColumn(name = "comment_id")
+    private CommentEntity commentEntity;
+
+    @OneToOne
+    @JoinColumn(name = "news_id")
+    private NewsEntity newsEntity;
 }
