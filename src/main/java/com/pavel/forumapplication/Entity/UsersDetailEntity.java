@@ -1,10 +1,13 @@
 package com.pavel.forumapplication.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.pavel.forumapplication.Enum.StatusEnum;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 
 import java.time.LocalDateTime;
 
@@ -15,8 +18,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "users-detail")
-@DynamicUpdate
 @DynamicInsert
+@DynamicUpdate
 @Audited
 public class UsersDetailEntity {
     @Id
@@ -24,19 +27,25 @@ public class UsersDetailEntity {
     private Long id;
 
     private String name;
-
     private String surname;
 
     private int age;
 
     private String description;
 
-    private LocalDateTime last_online;
+    private LocalDateTime birthday;
 
-    @Transient
-    private boolean status;
+    @Enumerated(EnumType.STRING)
+    private StatusEnum statusEnum;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id")
+    @NotAudited
+    private UsersEntity usersEntity;
 
     @OneToOne
-    @JoinColumn(name = "user_id")
-    private UsersEntity usersEntity;
+    @JoinColumn(name = "image_id")
+    @NotAudited
+    @JsonIgnore
+    private ImageEntity imageEntity;
 }
