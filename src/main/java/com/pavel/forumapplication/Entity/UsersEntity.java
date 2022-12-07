@@ -41,7 +41,7 @@ public class UsersEntity {
 
     private boolean loginIsEmail;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "usersEntity")
+    @OneToOne(mappedBy = "usersEntity")
     @NotAudited
     private UsersDetailEntity usersDetailEntity;
 }
