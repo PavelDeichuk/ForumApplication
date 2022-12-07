@@ -19,7 +19,7 @@ public interface UsersService {
 
     UsersDto ChangeEmail(String email);
 
-    UsersDto ResetEmail(UsersEntity usersEntity, String email_token);
+    UsersDto ActivateNewEmail(String activation_email);
 
     UsersDto ResetPassword(UsersEntity usersEntity, String pass_token);
 
