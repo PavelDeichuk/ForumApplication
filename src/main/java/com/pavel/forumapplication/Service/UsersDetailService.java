@@ -6,12 +6,13 @@ import com.pavel.forumapplication.Entity.UsersDetailEntity;
 import java.util.List;
 
 public interface UsersDetailService {
-    List<UsersDetailDto> GetAllUsersDetail(int number, int size);
+    List<UsersDetailDto> GetAllUsersDetail(int page, int size);
 
-    UsersDetailDto GetUserDetailById(Long user_id);
+    UsersDetailDto GetUsersDetailById(Long user_id);
 
-    UsersDetailDto CreateUserDetail(Long user_id, UsersDetailEntity usersDetailEntity);
+    UsersDetailDto CreateUserDetail(UsersDetailEntity usersDetailEntity);
 
     UsersDetailDto EditUserDetail(Long user_id, UsersDetailEntity usersDetailEntity);
 
+    UsersDetailDto DeleteUserDetail(Long user_id);
 }
