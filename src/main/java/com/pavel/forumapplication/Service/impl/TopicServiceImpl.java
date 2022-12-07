@@ -14,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.io.*;
 import java.util.List;
 import java.util.stream.Collectors;
 @Service
@@ -68,7 +69,7 @@ public class TopicServiceImpl implements TopicService {
     }
 
     @Override
-    public TopicDto CreateTopic(TopicEntity topicEntity) {
+    public TopicDto CreateTopic(TopicEntity topicEntity) throws IOException {
         TopicEntity topic = topicRepository
                 .saveAndFlush(
                         TopicEntity
