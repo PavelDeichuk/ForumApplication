@@ -2,10 +2,9 @@ package com.pavel.forumapplication.Service.impl;
 
 import com.pavel.forumapplication.Dto.UsersDetailDto;
 import com.pavel.forumapplication.Entity.UsersDetailEntity;
-import com.pavel.forumapplication.Entity.UsersEntity;
+import com.pavel.forumapplication.Exception.NotFoundException;
 import com.pavel.forumapplication.Mapper.UsersDetailMapper;
 import com.pavel.forumapplication.Repository.UsersDetailRepository;
-import com.pavel.forumapplication.Repository.UsersRepository;
 import com.pavel.forumapplication.Service.UsersDetailService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -15,24 +14,22 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
 @Service
 public class UsersDetailServiceImpl implements UsersDetailService {
 
-    private final UsersRepository usersRepository;
-
     private final UsersDetailRepository usersDetailRepository;
 
-    public UsersDetailServiceImpl(UsersRepository usersRepository, UsersDetailRepository usersDetailRepository) {
-        this.usersRepository = usersRepository;
+    public UsersDetailServiceImpl(UsersDetailRepository usersDetailRepository) {
         this.usersDetailRepository = usersDetailRepository;
     }
 
     @Override
-    public List<UsersDetailDto> GetAllUsersDetail(int number, int size) {
-        Pageable page = PageRequest.of(number,size);
-        Page<UsersDetailEntity> usersDetailEntities = usersDetailRepository.findAll(page);
+    public List<UsersDetailDto> GetAllUsersDetail(int page, int size) {
+        Pageable pageable = PageRequest.of(page,size);
+        Page<UsersDetailEntity> usersDetailEntities = usersDetailRepository.findAll(pageable);
         if(usersDetailEntities.isEmpty()){
-            throw new RuntimeException("Not found for user details list!");
+            throw new NotFoundException("List users detail empty!");
         }
         return usersDetailEntities
                 .stream()
@@ -41,35 +38,27 @@ public class UsersDetailServiceImpl implements UsersDetailService {
     }
 
     @Override
-    @Transactional
-    public UsersDetailDto GetUserDetailById(Long user_id) {
-        UsersEntity usersEntity = usersRepository
+    public UsersDetailDto GetUsersDetailById(Long user_id) {
+        UsersDetailEntity usersDetail = usersDetailRepository
                 .findById(user_id)
                 .orElseThrow(() -> {
-                    throw new RuntimeException("Not found for user id!");
+                    throw new NotFoundException("Not found for user detail id!");
                 });
-        UsersDetailEntity usersDetailEntity = usersDetailRepository
-                .findByUsersEntity(usersEntity);
-        return UsersDetailMapper.INSTANCE.USERS_DETAIL_DTO(usersDetailEntity);
+        return UsersDetailMapper.INSTANCE.USERS_DETAIL_DTO(usersDetail);
     }
 
     @Override
-    public UsersDetailDto CreateUserDetail(Long user_id, UsersDetailEntity usersDetailEntity) {
-        UsersEntity usersEntity = usersRepository
-                .findById(user_id)
-                .orElseThrow(() -> {
-                    throw new RuntimeException("Not found for user_id");
-                });
-        usersEntity.setUsersDetailEntity(usersDetailEntity);
+    @Transactional
+    public UsersDetailDto CreateUserDetail(UsersDetailEntity usersDetailEntity) {
         UsersDetailEntity usersDetail = usersDetailRepository
                 .saveAndFlush(
                         UsersDetailEntity
                                 .builder()
                                 .name(usersDetailEntity.getName())
                                 .surname(usersDetailEntity.getSurname())
-                                .description(usersDetailEntity.getDescription())
                                 .age(usersDetailEntity.getAge())
-                                .usersEntity(usersEntity)
+                                .description(usersDetailEntity.getDescription())
+                                .birthday(usersDetailEntity.getBirthday())
                                 .build()
                 );
         return UsersDetailMapper.INSTANCE.USERS_DETAIL_DTO(usersDetail);
@@ -78,18 +67,29 @@ public class UsersDetailServiceImpl implements UsersDetailService {
     @Override
     @Transactional
     public UsersDetailDto EditUserDetail(Long user_id, UsersDetailEntity usersDetailEntity) {
-        UsersEntity usersEntity = usersRepository
+        UsersDetailEntity usersDetail = usersDetailRepository
                 .findById(user_id)
                 .orElseThrow(() -> {
-                    throw new RuntimeException("Not found for user_id");
+                    throw new NotFoundException("Not found for user_id");
                 });
-        UsersDetailEntity usersDetail = usersDetailRepository
-                .findByUsersEntity(usersEntity);
-        usersDetail.setAge(usersDetailEntity.getAge());
         usersDetail.setName(usersDetailEntity.getName());
         usersDetail.setSurname(usersDetailEntity.getSurname());
+        usersDetail.setAge(usersDetailEntity.getAge());
         usersDetail.setDescription(usersDetailEntity.getDescription());
+        usersDetail.setBirthday(usersDetailEntity.getBirthday());
         usersDetailRepository.save(usersDetail);
+        return UsersDetailMapper.INSTANCE.USERS_DETAIL_DTO(usersDetail);
+    }
+
+    @Override
+    @Transactional
+    public UsersDetailDto DeleteUserDetail(Long user_id) {
+        UsersDetailEntity usersDetail = usersDetailRepository
+                .findById(user_id)
+                .orElseThrow(() -> {
+                    throw new NotFoundException("Not found for user id!");
+                });
+        usersDetailRepository.deleteById(user_id);
         return UsersDetailMapper.INSTANCE.USERS_DETAIL_DTO(usersDetail);
     }
 }
