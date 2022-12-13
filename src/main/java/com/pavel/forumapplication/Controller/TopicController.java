@@ -3,7 +3,9 @@ package com.pavel.forumapplication.Controller;
 import com.pavel.forumapplication.Dto.TopicDto;
 import com.pavel.forumapplication.Entity.TopicEntity;
 import com.pavel.forumapplication.Service.TopicService;
+import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -20,6 +22,7 @@ public class TopicController {
         this.topicService = topicService;
     }
 
+
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<TopicDto> GetAllTopic(@RequestParam(value = "page", defaultValue = "page") int page, @RequestParam(value = "size", defaultValue = "10") int size){
         return topicService.GetAllTopic(page,size);
@@ -31,14 +34,15 @@ public class TopicController {
     }
 
     @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public TopicDto CreateTopic(@RequestBody TopicEntity topicEntity) throws IOException {
-        return topicService.CreateTopic(topicEntity);
+    public TopicDto CreateTopic(@Valid @RequestBody TopicEntity topicEntity, BindingResult bindingResult) throws IOException {
+        return topicService.CreateTopic(topicEntity, bindingResult);
     }
 
     @RequestMapping(value = TOPIC_ID, method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
     public TopicDto EditTopic(@PathVariable Long topic_id,
-                              @RequestBody TopicEntity topicEntity){
-        return topicService.EditTopic(topic_id,topicEntity);
+                              @RequestBody TopicEntity topicEntity,
+                              BindingResult bindingResult){
+        return topicService.EditTopic(topic_id,topicEntity, bindingResult);
     }
 
     @RequestMapping(value = TOPIC_ID, method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
