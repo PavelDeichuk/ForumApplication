@@ -9,7 +9,7 @@ import java.io.IOException;
 public interface ImageSerivce {
     ImageDto AddImageUsersDetail(Long users_id,MultipartFile multipartFile) throws IOException;
 
-    ImageDto AddImageComment(Long comment_id, MultipartFile multipartFile);
+    ImageDto AddImageComment(Long comment_id, MultipartFile multipartFile) throws IOException;
 
     ImageDto AddImageTopic(Long topic_id, MultipartFile multipartFile) throws IOException;
 
