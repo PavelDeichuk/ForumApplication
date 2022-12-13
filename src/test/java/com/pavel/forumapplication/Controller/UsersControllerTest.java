@@ -48,6 +48,16 @@ class UsersControllerTest {
     }
 
     @Test
+    void getAllUsersNotFoundException() throws Exception {
+        List<UsersDto> usersDtos = null;
+        when(usersService.GetAllUsers(2,10)).thenReturn(usersDtos);
+        mockMvc.perform(get("/api/v1/users")
+                .contentType("application/json")
+                .contentType(objectMapper.writeValueAsString(usersDtos)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
     void getUserById() throws Exception {
         UsersDto usersDto = new UsersDto();
         when(usersService.GetUserById(any())).thenReturn(usersDto);
@@ -60,7 +70,25 @@ class UsersControllerTest {
     }
 
     @Test
+    void getUserById_NotFoundException() throws Exception {
+        UsersDto usersDto = UsersDto.builder().id(1L).build();
+        when(usersService.GetUserById(2L)).thenReturn(usersDto);
+        UsersDto getUserById = usersService.GetUserById(1L);
+        mockMvc.perform(get("/api/v1/users/2")
+                .contentType("application/json"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
     void createUser() throws Exception {
+        UsersDto usersDto = new UsersDto();
+        when(usersService.CreateUser(any(), any())).thenReturn(usersDto);
+        UsersDto usersDtoTest = usersService.CreateUser(any(), any());
+        mockMvc.perform(post("/api/v1/users")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(usersDtoTest)))
+                .andExpect(status().isOk());
+        verify(usersService).CreateUser(any(), any());
     }
 
     @Test
@@ -68,7 +96,15 @@ class UsersControllerTest {
     }
 
     @Test
-    void activateUser() {
+    void activateUser() throws Exception {
+        UsersDto usersDto = new UsersDto();
+        when(usersService.EditUser(any(), any(), any())).thenReturn(usersDto);
+        UsersDto usersDtoTest = usersService.ActivateAccount(any());
+        mockMvc.perform(get("/api/v1/users/activate?user=" + any())
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(usersDtoTest)))
+                .andExpect(status().isOk());
+        verify(usersService).ActivateAccount(any());
 
     }
 
