@@ -3,7 +3,9 @@ package com.pavel.forumapplication.Controller;
 import com.pavel.forumapplication.Dto.UsersDto;
 import com.pavel.forumapplication.Entity.UsersEntity;
 import com.pavel.forumapplication.Service.UsersService;
+import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -38,14 +40,15 @@ public class UsersController {
     }
 
     @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public UsersDto CreateUser(@RequestBody UsersEntity usersEntity){
-        return usersService.CreateUser(usersEntity);
+    public UsersDto CreateUser(@Valid @RequestBody UsersEntity usersEntity, BindingResult bindingResult){
+        return usersService.CreateUser(usersEntity, bindingResult);
     }
 
     @RequestMapping(value = USER_ID, method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
     public UsersDto EditUser(@PathVariable Long user_id,
-                             @RequestBody UsersEntity usersEntity){
-        return usersService.EditUser(user_id, usersEntity);
+                             @Valid @RequestBody UsersEntity usersEntity,
+                             BindingResult bindingResult){
+        return usersService.EditUser(user_id, usersEntity, bindingResult);
     }
 
     @RequestMapping(value = ACTIVATE, method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
