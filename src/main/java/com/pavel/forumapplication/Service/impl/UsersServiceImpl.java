@@ -5,6 +5,7 @@ import com.pavel.forumapplication.Email.EmailSender;
 import com.pavel.forumapplication.Entity.UsersDetailEntity;
 import com.pavel.forumapplication.Entity.UsersEntity;
 import com.pavel.forumapplication.Exception.BadRequestException;
+import com.pavel.forumapplication.Exception.NotFoundException;
 import com.pavel.forumapplication.Mapper.UsersMapper;
 import com.pavel.forumapplication.Repository.UsersDetailRepository;
 import com.pavel.forumapplication.Repository.UsersRepository;
@@ -14,6 +15,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 
 import java.util.List;
 import java.util.Objects;
@@ -41,7 +44,7 @@ public class UsersServiceImpl implements UsersService {
         Pageable page = PageRequest.of(number,size);
         Page<UsersEntity> usersEntities = usersRepository.findAll(page);
         if(usersEntities.isEmpty()){
-            throw new BadRequestException("users list is empty!");
+            throw new NotFoundException("users list is empty!");
         }
         return usersEntities
                 .stream()
@@ -54,7 +57,7 @@ public class UsersServiceImpl implements UsersService {
         UsersEntity usersEntity = usersRepository
                 .findById(user_id)
                 .orElseThrow(() -> {
-                    throw new RuntimeException("Not found for user id");
+                    throw new NotFoundException("Not found for user id");
                 });
         return UsersMapper.INSTANCE.USERS_DTO(usersEntity);
     }
@@ -64,7 +67,7 @@ public class UsersServiceImpl implements UsersService {
         UsersEntity users = usersRepository
                 .findByActivation(activation)
                 .orElseThrow(() -> {
-                    throw new RuntimeException("Error to found activation code!");
+                    throw new BadRequestException("Error to found activation code!");
                 });
         users.setRole("USER");
         users.setActivation(null);
@@ -74,19 +77,25 @@ public class UsersServiceImpl implements UsersService {
 
     @Override
     @Transactional
-    public UsersDto CreateUser(UsersEntity usersEntity) {
+    public UsersDto CreateUser(UsersEntity usersEntity, BindingResult bindingResult) {
         usersRepository
                 .findByUsername(usersEntity.getUsername())
                 .ifPresent(username -> {
-                    throw new RuntimeException("username is exist!");
+                    throw new BadRequestException("username is exist!");
                 });
         usersRepository
                 .findByEmail(usersEntity.getEmail())
                 .ifPresent(email -> {
-                    throw new RuntimeException("email is exist!");
+                    throw new BadRequestException("email is exist!");
                 });
         if(!Objects.equals(usersEntity.getPassword(), usersEntity.getPassword2())){
             throw new BadRequestException("password is not equals!");
+        }
+        if(bindingResult.hasErrors()){
+            List<FieldError> fieldErrors = bindingResult.getFieldErrors();
+            for (FieldError errors : fieldErrors){
+                throw new BadRequestException(errors.getObjectName() + " " + errors.getDefaultMessage());
+            }
         }
         UsersDetailEntity usersDetail = new UsersDetailEntity();
         UsersEntity users = usersRepository
@@ -112,7 +121,7 @@ public class UsersServiceImpl implements UsersService {
         UsersEntity users = usersRepository
                 .findByEmail(email)
                 .orElseThrow(() -> {
-                    throw new RuntimeException("Not found for email!");
+                    throw new NotFoundException("Not found for email!");
                 });
         users.setPasstoken(UUID.randomUUID().toString());
         usersRepository.save(users);
@@ -131,7 +140,7 @@ public class UsersServiceImpl implements UsersService {
         UsersEntity users = usersRepository
                 .findByEmailtoken(activation_email)
                 .orElseThrow(() -> {
-                    throw new RuntimeException("Not found for email token");
+                    throw new NotFoundException("Not found for email token");
                 });
         users.setEmail(null);
         usersRepository.save(users);
@@ -144,10 +153,10 @@ public class UsersServiceImpl implements UsersService {
         UsersEntity users = usersRepository
                 .findByPasstoken(pass_token)
                 .orElseThrow(() -> {
-                    throw new RuntimeException("Not found for pass token!");
+                    throw new NotFoundException("Not found for pass token!");
                 });
         if(Objects.equals(usersEntity.getPassword(), usersEntity.getPassword2())){
-            throw new RuntimeException("Password is not equals!");
+            throw new BadRequestException("Password is not equals!");
         }
         users.setPassword(usersEntity.getPassword());
         users.setPasstoken(null);
@@ -157,17 +166,23 @@ public class UsersServiceImpl implements UsersService {
 
     @Override
     @Transactional
-    public UsersDto EditUser(Long user_id, UsersEntity usersEntity) {
+    public UsersDto EditUser(Long user_id, UsersEntity usersEntity, BindingResult bindingResult) {
         UsersEntity users_id = usersRepository
                 .findById(user_id)
                 .orElseThrow(() -> {
-                    throw new RuntimeException("Not found for user_id");
+                    throw new NotFoundException("Not found for user_id");
                 });
         usersRepository
                 .findByUsername(usersEntity.getUsername())
                 .ifPresent(username -> {
-                    throw new RuntimeException("Username is exist!");
+                    throw new BadRequestException("Username is exist!");
                 });
+        if(bindingResult.hasErrors()){
+            List<FieldError> fieldErrors = bindingResult.getFieldErrors();
+            for (FieldError error :  fieldErrors){
+                throw new BadRequestException(error.getObjectName() + " " + error.getDefaultMessage());
+            }
+        }
         users_id.setUsername(usersEntity.getUsername());
         users_id.setLoginIsEmail(usersEntity.isLoginIsEmail());
         usersRepository.save(users_id);
@@ -180,7 +195,7 @@ public class UsersServiceImpl implements UsersService {
        UsersEntity users = usersRepository
                 .findById(user_id)
                 .orElseThrow(() -> {
-                    throw new RuntimeException("Not found for user_id!");
+                    throw new NotFoundException("Not found for user_id!");
                 });
         usersRepository.deleteById(user_id);
         return UsersMapper.INSTANCE.USERS_DTO(users);
