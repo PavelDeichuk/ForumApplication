@@ -2,13 +2,10 @@ package com.pavel.forumapplication.Service.impl;
 
 import com.pavel.forumapplication.Entity.UsersEntity;
 import com.pavel.forumapplication.Repository.UsersRepository;
-import com.pavel.forumapplication.Service.UsersService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,6 +61,7 @@ class UsersServiceImplTest {
 
     @Test
     void changePassword() {
+
     }
 
     @Test
@@ -80,6 +78,7 @@ class UsersServiceImplTest {
 
     @Test
     void editUser() {
+
     }
 
     @Test
