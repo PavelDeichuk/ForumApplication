@@ -2,7 +2,7 @@ package com.pavel.forumapplication.Service;
 
 import com.pavel.forumapplication.Dto.UsersDto;
 import com.pavel.forumapplication.Entity.UsersEntity;
-import org.springframework.data.domain.Pageable;
+import org.springframework.validation.BindingResult;
 
 import java.util.List;
 
@@ -13,7 +13,7 @@ public interface UsersService {
 
     UsersDto ActivateAccount(String activation);
 
-    UsersDto CreateUser(UsersEntity usersEntity);
+    UsersDto CreateUser(UsersEntity usersEntity, BindingResult bindingResult);
 
     UsersDto ChangePassword(String email);
 
@@ -23,7 +23,7 @@ public interface UsersService {
 
     UsersDto ResetPassword(UsersEntity usersEntity, String pass_token);
 
-    UsersDto EditUser(Long user_id, UsersEntity usersEntity);
+    UsersDto EditUser(Long user_id, UsersEntity usersEntity, BindingResult bindingResult);
 
     UsersDto DeleteUser(Long user_id);
 }
