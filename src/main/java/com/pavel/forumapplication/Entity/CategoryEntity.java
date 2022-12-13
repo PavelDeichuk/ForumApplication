@@ -2,9 +2,13 @@ package com.pavel.forumapplication.Entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 
 import java.util.List;
 
@@ -17,11 +21,14 @@ import java.util.List;
 @Table(name = "category")
 @DynamicInsert
 @DynamicUpdate
+@Audited
 public class CategoryEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Size(min = 3, max = 24, message = "name is min 3 max 24")
+    @NotNull(message = "name is null!")
     private String name;
 
     @ManyToMany(cascade = CascadeType.ALL)
@@ -30,5 +37,7 @@ public class CategoryEntity {
             joinColumns = @JoinColumn(name = "topic_id"),
             inverseJoinColumns = @JoinColumn(name = "category_id"))
     @JsonIgnore
+    @NotAudited
     private List<TopicEntity> topicEntities;
+
 }
