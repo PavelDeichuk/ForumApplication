@@ -61,7 +61,7 @@ public class NewsServiceImpl implements NewsService {
                 .orElseThrow(() -> {
                     throw new NotFoundException("Error init login!");
                 });
-        NewsEntity newsEntity1 = newsRepository
+        NewsEntity newsSave = newsRepository
                 .saveAndFlush(
                         NewsEntity
                                 .builder()
@@ -70,7 +70,7 @@ public class NewsServiceImpl implements NewsService {
                                 .usersEntity(users)
                                 .build()
                 );
-        return NewsMapper.INSTANCE.NEWS_DTO(newsEntity1);
+        return NewsMapper.INSTANCE.NEWS_DTO(newsSave);
     }
 
     @Override
