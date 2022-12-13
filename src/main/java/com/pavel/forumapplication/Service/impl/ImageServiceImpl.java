@@ -1,10 +1,12 @@
 package com.pavel.forumapplication.Service.impl;
 
 import com.pavel.forumapplication.Dto.ImageDto;
+import com.pavel.forumapplication.Entity.CommentEntity;
 import com.pavel.forumapplication.Entity.ImageEntity;
 import com.pavel.forumapplication.Entity.TopicEntity;
 import com.pavel.forumapplication.Entity.UsersDetailEntity;
 import com.pavel.forumapplication.Exception.NotFoundException;
+import com.pavel.forumapplication.Mapper.CommentMapper;
 import com.pavel.forumapplication.Mapper.ImageMapper;
 import com.pavel.forumapplication.Repository.CommentRepository;
 import com.pavel.forumapplication.Repository.ImageRepository;
@@ -12,6 +14,7 @@ import com.pavel.forumapplication.Repository.TopicRepository;
 import com.pavel.forumapplication.Repository.UsersDetailRepository;
 import com.pavel.forumapplication.Service.ImageSerivce;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -39,6 +42,7 @@ public class ImageServiceImpl implements ImageSerivce {
     }
 
     @Override
+    @Transactional
     public ImageDto AddImageUsersDetail(Long users_id, MultipartFile multipartFile) throws IOException {
         UsersDetailEntity usersDetailEntity = usersDetailRepository
                 .findById(users_id)
@@ -68,11 +72,37 @@ public class ImageServiceImpl implements ImageSerivce {
     }
 
     @Override
-    public ImageDto AddImageComment(Long comment_id, MultipartFile multipartFile) {
+    @Transactional
+    public ImageDto AddImageComment(Long comment_id, MultipartFile multipartFile) throws IOException {
+        CommentEntity commentEntity = commentRepository
+                .findById(comment_id)
+                .orElseThrow(() -> {
+                    throw new NotFoundException("Not found for comment id!");
+                });
+        if(!multipartFile.isEmpty()){
+            File file = new File("images//" + multipartFile.getOriginalFilename());
+            FileOutputStream fileOutputStream = new FileOutputStream(file);
+            fileOutputStream.write(multipartFile.getBytes());
+            fileOutputStream.flush();
+            fileOutputStream.close();
+            ImageEntity imageEntity = imageRepository
+                    .save(
+                            ImageEntity
+                                    .builder()
+                                    .name(multipartFile.getOriginalFilename())
+                                    .bytes(multipartFile.getBytes())
+                                    .commentEntity(commentEntity)
+                                    .build()
+                    );
+            commentEntity.setImageEntity(imageEntity);
+            commentRepository.saveAndFlush(commentEntity);
+            return ImageMapper.INSTANCE.IMAGE_DTO(imageEntity);
+        }
         return null;
     }
 
     @Override
+    @Transactional
     public ImageDto AddImageTopic(Long topic_id, MultipartFile multipartFile) throws IOException {
         TopicEntity topic = topicRepository
                 .findById(topic_id)
